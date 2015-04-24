@@ -1,0 +1,12 @@
+{application, hotswap,
+    [
+        {description,"Tools for generation hotswap release"},
+        {modules,[]},
+        {registered,[]},
+        {applications,[
+                kernel,
+                stdlib
+            ]},
+        {vsn, "semver"}
+    ]
+}.
