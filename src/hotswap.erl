@@ -40,12 +40,13 @@ main([OldRel, NewRel]) ->
     io:format("Upgraded: ~p~n", [Upgraded]),
 
     generate_appup(Upgraded, NewRoot, OldRoot),
-    generate_relup(RelName, NewVsn, NewRel, OldRel, NewRoot, OldRoot),
+    generate_relup(NewVsn, NewRel, OldRel, NewRoot, OldRoot),
     NewRootRel = filename:dirname(filename:dirname(filename:dirname(NewRel))),
-    LibPath = filename:join([NewRootRel, "*", ebin]),
-    {ok, 4401} = file:copy("install_upgrade.escript",
+    LibPath = filename:join([NewRootRel, lib, "*", ebin]),
+    {ok, 4385} = file:copy("install_upgrade.escript",
                            filename:join([NewRootRel, "bin",
                                           "install_upgrade.escript"])),
+    io:format("Make tar ~s.tar.gz~n", [filename:rootname(NewRel)]),
     ok = systools:make_tar(filename:rootname(NewRel), [{path, [LibPath]}]),
     ok;
 main(["help"]) ->
@@ -176,9 +177,7 @@ generate_appup([{App, {OldVer, NewVer}} | Tail], NewRoot, OldRoot) ->
 generate_appup([], _, _) -> ok.
 
 
-generate_relup(RelName, NewVsn, NewRelFile, OldRelFile, NewRoot, OldRoot) ->
-    io:format("Relup ~p ~p ~p ~p ~p ~p", [RelName, NewVsn, NewRelFile,
-                                          OldRelFile, NewRoot, OldRoot]),
+generate_relup(NewVsn, NewRelFile, OldRelFile, NewRoot, OldRoot) ->
     Options = [
                {outdir, filename:join([NewRoot, "releases", NewVsn])},
                {path, [
@@ -189,5 +188,6 @@ generate_relup(RelName, NewVsn, NewRelFile, OldRelFile, NewRoot, OldRoot) ->
                ],
     NewRel = string:left(NewRelFile, string:len(NewRelFile) - 4),
     OldRel = string:left(OldRelFile, string:len(OldRelFile) - 4),
-    systools:make_relup(NewRel, [OldRel], [OldRel], Options),
+    io:format("Make relup ~s from ~s~n", [NewRel, OldRel]),
+    ok = systools:make_relup(NewRel, [OldRel], [OldRel], Options),
     ok.

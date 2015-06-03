@@ -103,4 +103,4 @@ start_distribution(NodeName, Cookie) ->
 
 make_script_node(Node) ->
     [Name, Host] = string:tokens(Node, "@"),
-    list_to_atom(lists:concat([Name, "_upgrader_", os:getpid(), "@", Host])).
+    list_to_atom(lists:concat([Name, "upgrade", "@", Host])).
